@@ -110,11 +110,9 @@
 
 El Producto Interno Bruto (PIB) per cápita es uno de los indicadores económicos más referenciados a nivel mundial. Al representar el valor promedio de la producción de bienes y servicios que corresponde a cada habitante de un país en un periodo determinado, este indicador nos proporciona una instantánea de la salud económica de una nación y su capacidad para proporcionar prosperidad a su población. Considerar el PIB per cápita es esencial, ya que no sólo refleja la magnitud de la economía en sí, sino también hasta qué punto los beneficios de esta economía están siendo compartidos entre los ciudadanos. Su estudio nos permite comprender las disparidades económicas entre naciones y regiones, y evaluar la eficacia de las políticas económicas. Asimismo, es una herramienta invaluable para analizar tendencias a lo largo del tiempo, identificar desafíos y proyectar escenarios futuros.
 
-En el presente estudio, vamos a predecir el Producto Interno Bruto (PIB) per cápita mediante la aplicación de técnicas avanzadas de Machine Learning. En específico, se han seleccionado modelos basados en árboles, incluyendo Árboles de Decisión, Random Forest, XGBoost y Light GBM, con la intención de explorar y evaluar sus capacidades predictivas en contextos económicos.
+En el presente estudio\footnote{En \href{https://github.com/gustavovargas/ml_aplicado_ccss}{este repositorio} se puede ver el código, tanto de jupyter como el fichero latex, que se han usado para generar este documento}, vamos a predecir el Producto Interno Bruto (PIB) per cápita mediante la aplicación de técnicas avanzadas de Machine Learning. En específico, se han seleccionado modelos basados en árboles, incluyendo Árboles de Decisión, Random Forest, XGBoost y Light GBM, con la intención de explorar y evaluar sus capacidades predictivas en contextos económicos. Además, la predicción se hará sobre las variaciones interanuales de PIB per cápita y no sobre los valores absolutos. 
 
-El estudio aborda dos enfoques diferentes. El primero se centra en la predicción de la serie absoluta del PIB per cápita, mientras que el segundo analiza la predicción de las variaciones anuales de dicho indicador. Este doble enfoque nos permitirá saber si alguno de los dos presenta una mayor susceptibilidad a ser predicho con precisión por los modelos seleccionados.
 
-Un componente esencial de nuestro análisis radica en la interpretación de los factores o variables que más influyen en las predicciones. Afortunadamente, los modelos basados en árboles ofrecen una ventaja significativa en este aspecto, ya que incorporan el método denominado \textit{feature importance}. Mediante este método, es posible identificar las variables según su grado de relevancia en la predicción del PIB per cápita. Esta evaluación no sólo proporciona una visión detallada sobre los determinantes subyacentes del PIB per cápita según los modelos, sino que también puede ser instrumental en la formulación de políticas y estrategias económicas basadas en datos.
 
 \section{Datos}
 
@@ -123,25 +121,25 @@ El PIB per cápita es una medida económica que se obtiene al dividir el Product
 En el contexto de esta investigación, se ha recurrido a la base de datos del proyecto Maddison, una fuente reconocida por su meticulosa recopilación y análisis de series temporales a largo plazo del PIB. En específico, los datos seleccionados hacen referencia al PIB real per cápita, y están ajustados a dólares constantes del año 2011. Esta elección garantiza una comparación homogénea y ajustada por inflación a lo largo del periodo de estudio, permitiendo así un análisis más preciso y fundamentado sobre las tendencias y comportamientos del PIB per cápita a nivel global.	Usaremos los datos disponibles para España a partir de 1850 hasta 2018, como se puede ver en la Figura 1.
 
 \begin{center}
-\includegraphics[scale=0.65]{fig_1_pibpc}
+\includegraphics[scale=0.57]{fig_1_pibpc}
 \end{center}
 
-En una segunda parte del estudio utilizaremos los rendimientos interanuales correspondientes a los años de estudio. Se pueden ver en la Figura 2.
+De cara a los experimentos, utilizaremos los rendimientos interanuales correspondientes a los años de estudio. Se pueden ver en la Figura 2.
 
 \begin{center}
-\includegraphics[scale=0.65]{fig_2_varpibpc}
+\includegraphics[scale=0.57]{fig_2_varpibpc}
 \end{center}
 
 
 \section{Metodología}
 
-Se adopta un enfoque de procesamiento de datos orientado a la estructuración de un problema de regresión. Con este propósito, se segmentarán los datos en ventanas temporales de 8 años. De cada ventana, se emplearán los datos correspondientes a los primeros 7 años para prever el valor del octavo año. Los algoritmos seleccionados para este estudio están diseñados para minimizar el error cuadrático.
+Se adopta un enfoque de procesamiento de datos orientado a la estructuración de un problema de regresión, de modo que necesitamos convertir la serie temporal en lo que se conoce como \textit{data tabulares}. Con este propósito, se segmentarán los datos en ventanas temporales de 8 años. De cada ventana, se emplearán los datos correspondientes a los primeros 7 años para prever el valor del octavo año. Los algoritmos seleccionados para este estudio están diseñados para minimizar el error cuadrático.
 
 
 Es esencial mencionar que basar la evaluación del modelo en el error calculado sobre los datos de entrenamiento puede ser inapropiado. Por ende, es necesario dividir el conjunto de datos en otros dos: \textit{datos de entrenamiento} y \textit{datos de test}. A fin de evitar solapamientos y garantizar la integridad de la información temporal, se eliminarán las 7 filas que se encuentran entre dichos dos subconjuntos. Este procedimiento y su lógica se ilustran en la Figura 3.
 
 \begin{figure}[H]
-  \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{fig_3_schema}}
+  \makebox[\textwidth][c]{\includegraphics[width=1.0\textwidth]{fig_3_schema}}
 \end{figure}
 
 \subsection{Algoritmos}
@@ -154,14 +152,12 @@ Para este estudio, se ha optado por emplear algoritmos basados en árboles. Esta
 
 \subsubsection{Árboles de Decisión}
 
-Un Árbol de Decisión para regresión es una herramienta de aprendizaje supervisado que predice valores continuos en lugar de etiquetas de clase. La estructura de un árbol de decisión consta de nodos, ramas y hojas. Cada nodo representa una característica o atributo del conjunto de datos, cada rama representa una decisión basada en un valor de ese atributo y cada hoja es el resultado, que en el caso de la regresión es un valor numérico.
-
-El proceso de construcción de un árbol de regresión implica seleccionar el atributo que proporciona la mejor división en función de un criterio determinado, generalmente la reducción de varianza. Una vez que se selecciona un atributo para un nodo, el conjunto de datos se divide en subconjuntos según los valores de ese atributo. Este proceso se repite de manera recursiva para cada subconjunto hasta que se alcanza un criterio de parada, como una profundidad máxima del árbol o un número mínimo de puntos de datos en un nodo.
+Un Árbol de Decisión para regresión es una herramienta de aprendizaje supervisado que predice valores continuos en lugar de etiquetas de clase. La estructura de un árbol de decisión consta de nodos, ramas y hojas. Cada nodo representa una característica o atributo del conjunto de datos, cada rama representa una decisión basada en un valor de ese atributo y cada hoja es el resultado, que en el caso de la regresión es un valor numérico\footnote{Para más detalles del algoritmo, se puede ver \cite{adaboost}}.
 
 \begin{algorithm}
 \caption{Árbol de Decisión para Regresión}
 \begin{algorithmic}
-\Procedure{ÁrbolDeDecisiónRegresión}{Datos, Criterio}
+\Procedure{Árbol Regresión}{Datos, Criterio}
     \If{todos los ejemplos en Datos tienen el mismo valor}
         \State \Return valor promedio
     \EndIf
@@ -170,14 +166,14 @@ El proceso de construcción de un árbol de regresión implica seleccionar el at
     \EndIf
     \State MejorAtributo $\leftarrow$ seleccionarMejorAtributo(Datos, Criterio)
     \State Árbol $\leftarrow$ nuevo nodo con MejorAtributo
-    \For{cada valor v posible de MejorAtributo}
+    \For{cada valor \textit{v} posible de MejorAtributo}
         \State Datos\_v $\leftarrow$ ejemplos en Datos donde MejorAtributo = v
         \If{Datos\_v está vacío}
             \State añadir una rama a Árbol con etiqueta v
             \State nodo hoja con valor promedio en Datos
         \Else
             \State añadir rama a Árbol con etiqueta v
-            \State \Call{ÁrbolDeDecisiónRegresión}{Datos\_v, Criterio}
+            \State \Call{Árbol Regresión}{Datos\_v, Criterio}
         \EndIf
     \EndFor
     \Return Árbol
@@ -185,7 +181,7 @@ El proceso de construcción de un árbol de regresión implica seleccionar el at
 \end{algorithmic}
 \end{algorithm}
 
-
+El proceso de construcción de un árbol de regresión implica seleccionar el atributo que proporciona la mejor división en función de un criterio determinado, generalmente la reducción de varianza. Una vez que se selecciona un atributo para un nodo, el conjunto de datos se divide en subconjuntos según los valores de ese atributo. Este proceso se repite de manera recursiva para cada subconjunto hasta que se alcanza un criterio de parada, como una profundidad máxima del árbol o un número mínimo de puntos de datos en un nodo.
 
 \subsubsection{Random Forest}
 
@@ -196,7 +192,7 @@ Random Forest es un algoritmo que combina múltiples árboles de decisión para 
   \item Feature randomness: Al construir cada árbol, en lugar de buscar la mejor característica para dividir en cada nodo, se selecciona un subconjunto aleatorio de características y luego se busca la mejor característica para dividir solo dentro de ese subconjunto.
 \end{itemize}
 
-Una vez entrenado el modelo, para realizar una predicción, se ejecuta el ejemplo a través de todos los árboles en el bosque y se toma el promedio de sus predicciones para obtener la predicción final del modelo.
+Una vez entrenado el modelo, para realizar una predicción, se ejecuta el ejemplo a través de todos los árboles en el bosque y se toma el promedio de sus predicciones para obtener la predicción final del modelo\footnote{Para más detalles del algoritmo, se puede ver \cite{rf}}.
 
 \begin{algorithm}
 \caption{Random Forest para Regresión}
@@ -219,28 +215,17 @@ Una vez entrenado el modelo, para realizar una predicción, se ejecuta el ejempl
 
 \subsubsection{XGBoost}
 
-XGBoost, que proviene de 'Extreme Gradient Boosting', es un algoritmo de aprendizaje supervisado que utiliza un enfoque de boosting para construir un conjunto de árboles de decisión. El objetivo principal de XGBoost es optimizar un conjunto de modelos débiles, generalmente árboles de decisión, de manera aditiva y secuencial. Estos son algunos aspectos clave de su funcionamiento:
-
-\begin{itemize}
-  \item Función de Pérdida: La base del método XGBoost es minimizar una función de pérdida. En el caso de la regresión, la función de pérdida más comúnmente utilizada es la diferencia cuadrada entre las predicciones y los valores verdaderos. Sin embargo, XGBoost puede adaptarse a diferentes funciones de pérdida y se puede utilizar para tareas de clasificación y ranking, además de la regresión.
-  \item Boosting: XGBoost utiliza un enfoque de boosting, lo que significa que construye árboles de manera secuencial, donde cada árbol corrige los errores del anterior. A diferencia de otros algoritmos de boosting, XGBoost también tiene en cuenta un término de regularización en su función objetivo, lo que ayuda a evitar el sobreajuste.
-  \item Descenso de Gradiente: A medida que construye cada árbol, XGBoost utiliza el descenso de gradiente para minimizar el error entre las predicciones actuales y los valores reales. Específicamente, calcula el gradiente (primera derivada) y el hessiano (segunda derivada) de la función de pérdida con respecto a las predicciones del modelo anterior para guiar la construcción del siguiente árbol.
-  \item Regularización: XGBoost incluye términos de regularización en su función objetivo, lo que tiene el efecto de penalizar modelos más complejos y ayudar a prevenir el sobreajuste. Esta regularización se aplica tanto a la estructura de los árboles individuales (como la profundidad del árbol) como a las ponderaciones de las predicciones de los árboles.
-  \item Optimización de la Estructura del Árbol: XGBoost utiliza un criterio llamado 'ganancia' para determinar las divisiones en cada árbol. La ganancia es la reducción en la función de pérdida que se obtiene al realizar una división en particular. Al seleccionar las divisiones que producen la máxima ganancia, XGBoost construye árboles que son óptimos en términos de reducir la función de pérdida.
-  \item Paralelización: Aunque el proceso de boosting es inherentemente secuencial (cada árbol debe construirse después del anterior), XGBoost está diseñado para paralelizar la construcción de los árboles individuales. Esto significa que puede construir un árbol más rápidamente al utilizar múltiples núcleos de CPU.
-  \item Pruning: A diferencia de la mayoría de los algoritmos de árboles que utilizan una estrategia de 'pruning' basada en la profundidad (limitan la profundidad máxima de un árbol), XGBoost utiliza 'depth-first pruning'. Es decir, permite que un árbol crezca en profundidad hasta que cumpla con ciertos criterios, y luego poda el árbol retrocediendo y eliminando ramas que aportan poco valor.
-\end{itemize}
-
+XGBoost, que proviene de 'Extreme Gradient Boosting', es un algoritmo de aprendizaje supervisado que utiliza un enfoque de boosting para construir un conjunto de árboles de decisión. El objetivo principal de XGBoost es optimizar un conjunto de modelos débiles, generalmente árboles de decisión, de manera aditiva y secuencial\footnote{Para más detalles del algoritmo, se puede ver \cite{xgboost}}. Se caracteriza por:
 
 \begin{algorithm}
 \caption{XGBoost para Regresión}
 \begin{algorithmic}
-\Procedure{XGBoostRegresión}{Datos, n\_árboles, tasa\_aprendizaje, regularización}
+\Procedure{XGBoostRegresión}{Datos, n\_árboles, learning\_rate}
     \State Inicializar modelo con predicciones constantes (p. ej., promedio de los objetivos)
     \For{\(i = 1\) hasta n\_árboles}
         \State Calcular gradientes y hessianos de la función de pérdida
         \State Construir árbol usando gradientes y hessianos
-        \State Actualizar modelo sumando tasa\_aprendizaje $\times$ predicciones del nuevo árbol
+        \State Actualizar modelo sumando learning\_rate $\times$ predicciones del nuevo árbol
     \EndFor
     \Procedure{predecir}{ejemplo}
         \State Sumar predicciones de todos los árboles para el ejemplo 
@@ -251,33 +236,31 @@ XGBoost, que proviene de 'Extreme Gradient Boosting', es un algoritmo de aprendi
 \end{algorithm}
 
 
+\begin{itemize}
+  \item Boosting: Construye árboles de manera secuencial, donde cada árbol corrige los errores del anterior. A diferencia de otros algoritmos de boosting, XGBoost también tiene en cuenta un término de regularización en su función objetivo, lo que ayuda a evitar el sobreajuste.
+  \item Descenso de Gradiente: A medida que construye cada árbol, XGBoost utiliza el descenso de gradiente para minimizar el error entre las predicciones actuales y los valores reales. Específicamente, calcula el gradiente (primera derivada) y el hessiano (segunda derivada) de la función de pérdida con respecto a las predicciones del modelo anterior para guiar la construcción del siguiente árbol.
+  \item Pruning: A diferencia de la mayoría de los algoritmos de árboles que utilizan una estrategia de 'pruning' basada en la profundidad (limitan la profundidad máxima de un árbol), XGBoost utiliza 'depth-first pruning'. Es decir, permite que un árbol crezca en profundidad hasta que cumpla con ciertos criterios, y luego poda el árbol retrocediendo y eliminando ramas que aportan poco valor.
+\end{itemize}
+
+
+
+
+
 
 
 \subsubsection{LightGBM}
 
-LightGBM, acrónimo de 'Light Gradient Boosting Machine', es un framework de boosting optimizado para conjuntos de datos grandes y altamente dimensional. A continuación, se presentan características y detalles clave de su funcionamiento:
-
-\begin{itemize}
-  \item Crecimiento basado en hojas: A diferencia de otros algoritmos de boosting que construyen árboles nivel por nivel, LightGBM sigue una estrategia de crecimiento basada en hojas. Mientras que los enfoques tradicionales crecen el árbol de manera uniforme, LightGBM divide la hoja que aporta la máxima reducción en la función de pérdida, permitiendo un aprendizaje más dirigido y, a menudo, un error menor.
-  \item Optimización para Conjuntos de Datos Grandes: LightGBM utiliza histogramas para agrupar características continuas en intervalos discretos. Estos histogramas reducen significativamente el número de divisiones a considerar y, por lo tanto, aceleran el proceso de formación del árbol.
-  \item Manejo de Características Categóricas: LightGBM puede manejar características categóricas sin la necesidad de transformaciones previas. A diferencia de los enfoques tradicionales que utilizan codificación one-hot, LightGBM busca la división óptima de las características categóricas basada en la función de pérdida.
-  \item Regularización: Para evitar el sobreajuste, LightGBM incorpora términos de regularización en su función objetivo. Estos términos pueden aplicarse tanto a las estructuras de los árboles (por ejemplo, controlando la profundidad o el número de hojas) como a las ponderaciones de las predicciones.
-  \item Técnicas de Boosting: Al igual que otros métodos de boosting, LightGBM construye árboles de forma iterativa, donde cada árbol se construye para corregir los errores del conjunto de árboles anterior.
-  \item Uso Eficiente de la Memoria: Las optimizaciones de LightGBM, como la creación de histogramas, permiten que el algoritmo utilice menos memoria en comparación con otros métodos de boosting.
-  \item Paralelización y Escalabilidad: LightGBM está diseñado para escalar a lo largo de grandes conjuntos de datos y distribuirse en múltiples máquinas. Utiliza técnicas como la construcción de árboles basada en características para paralelizar el entrenamiento, lo que mejora la eficiencia en conjuntos de datos con un alto número de características.
-  \item Soporte para Valores Perdidos: LightGBM tiene incorporado el manejo de valores perdidos. Durante el proceso de construcción del árbol, determina la dirección óptima para las observaciones con valores perdidos, ya sea a la división izquierda o derecha.
-\end{itemize}
-
+LightGBM, acrónimo de 'Light Gradient Boosting Machine', es un framework de boosting optimizado para conjuntos de datos grandes y altamente dimensional\footnote{Para más detalles del algoritmo, se puede ver \cite{lightgbm}}. Tiene las siguientes características:
 
 \begin{algorithm}
 \caption{LightGBM para Regresión}
 \begin{algorithmic}[1]
-\Procedure{LightGBMRegresión}{Datos, n\_árboles, tasa\_aprendizaje}
+\Procedure{LightGBMRegresión}{Datos, n\_árboles, learning\_rate}
     \State Inicializar modelo con predicciones constantes
     \For{\(i = 1\) hasta n\_árboles}
         \State Calcular gradientes de la función de pérdida
         \State Construir árbol utilizando estrategia de crecimiento basada en hojas
-        \State Actualizar modelo sumando tasa\_aprendizaje $\times$ predicciones del nuevo árbol
+        \State Actualizar modelo sumando learning\_rate $\times$ predicciones del nuevo árbol
     \EndFor
     \Procedure{predecir}{ejemplo}
         \State Sumar predicciones de todos los árboles para el ejemplo
@@ -286,6 +269,18 @@ LightGBM, acrónimo de 'Light Gradient Boosting Machine', es un framework de boo
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+
+
+\begin{itemize}
+  \item Crecimiento basado en hojas: Mientras que los enfoques tradicionales crecen el árbol de manera uniforme, LightGBM divide la hoja que aporta la máxima reducción en la función de pérdida, permitiendo un aprendizaje más dirigido.
+  \item Optimización para Conjuntos de Datos Grandes: LightGBM utiliza histogramas para agrupar características continuas en intervalos discretos. Estos histogramas reducen significativamente el número de divisiones a considerar y, por lo tanto, aceleran el proceso de formación del árbol.
+  \item Uso Eficiente de la Memoria: Las optimizaciones de LightGBM, como la creación de histogramas, permiten que el algoritmo utilice menos memoria en comparación con otros métodos de boosting.
+  \item Paralelización y Escalabilidad: Utiliza técnicas como la construcción de árboles basada en características para paralelizar el entrenamiento, lo que mejora la eficiencia en conjuntos de datos con un alto número de características.
+  \item Soporte para Valores Nulos: Durante el proceso de construcción del árbol, determina la dirección óptima para las observaciones con valores nulos, ya sea a la división izquierda o derecha.
+\end{itemize}
+
+
+
  
 \subsection{Experimentación}
 
@@ -326,9 +321,10 @@ Light GBM     & 0.00216 & 0.00082 \\ \hline
 La Figura 4 nos permite explicar el porqué de ello. Ahí vemos la variación del PIB per cápita en azul en test y la comparamos con las distintas predicciones. En el caso de Light GBM, la predicción no varía mucho, dando una curva relativamente plana. Ésto, sin embargo, es lo que le permite tener un error relativamente pequeño, ya que en el resto de casos las predicciones se separan mucho más de los valores reales.
 
 \begin{figure}[H]
-  \makebox[\textwidth][c]{\includegraphics[width=1\textwidth]{fig_4_comparacion.png}}
+  \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{fig_4_comparacion.png}}
 \end{figure}
- 
+
+\newpage
 
 \section{Conclusiones}
 
